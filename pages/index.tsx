@@ -13,14 +13,17 @@ export default function Page() {
   let height = 12;
   let buffer = 12;
   let [ref, bounds] = useMeasure();
-  let [hovered, setHovered] = useState(false);
-  let [panning, setPanning] = useState(false);
+  // progress is a value between 0 and 1
   let progress = useMotionValue(0.5);
+  // convert progress to a width between 0 and 100 as a string
   let width = useTransform(progress, (v) => `${v * 100}%`);
+  // use another transform
   let roundedProgress = useTransform(
     progress,
     (v) => `${roundTo(v * 100, 0)}%`
   );
+  let [hovered, setHovered] = useState(false);
+  let [panning, setPanning] = useState(false);
   let [progressState, setProgressState] = useState(roundedProgress.get());
   let state = panning ? "panning" : hovered ? "hovered" : "idle";
 
@@ -32,7 +35,7 @@ export default function Page() {
     <MotionConfig transition={transition}>
       <div className="flex items-center justify-center h-full max-h-[800px] py-16">
         <div className="w-[375px] h-full bg-gray-800 rounded-2xl flex flex-col justify-center px-4">
-          <p className="text-center text-sm font-medium mt-8">
+          <p className="tex-center tex-sm font-medium mt-8">
             iOS 16 Slider demo
           </p>
           <div className="flex flex-1 flex-col items-center justify-center">
@@ -42,8 +45,8 @@ export default function Page() {
                 animate={{
                   color:
                     hovered || panning
-                      ? "rgb(255,255,255)"
-                      : "rgb(120,113,108)",
+                      ? "rgb(255, 255, 255)"
+                      : "rgb(120, 113, 108)",
                 }}
                 className="flex justify-start shrink-0 w-6"
               >
@@ -54,9 +57,14 @@ export default function Page() {
                 animate={state}
                 onPanStart={() => setPanning(true)}
                 onPanEnd={() => setPanning(false)}
-                onPointerEnter={() => setHovered(true)}
-                onPointerLeave={() => setHovered(false)}
+                onPointerEnter={() => {
+                  setHovered(true);
+                }}
+                onPointerLeave={() => {
+                  setHovered(false);
+                }}
                 onPan={(event, info) => {
+                  // calculating the delta in percent from the raw event into percentage
                   let deltaInPercent = info.delta.x / bounds.width;
                   let newPercent = clamp(progress.get() + deltaInPercent, 0, 1);
                   progress.set(newPercent);
@@ -64,7 +72,7 @@ export default function Page() {
                 style={{ height: height + buffer }}
                 className="flex items-center justify-center relative touch-none grow-0"
                 variants={{
-                  idle: { width: "calc(95% - 48px)" },
+                  idle: { width: "calc(95% - 48px" },
                   hovered: { width: "calc(100% - 48px)" },
                   panning: { width: "calc(100% - 48px)" },
                 }}
@@ -72,6 +80,7 @@ export default function Page() {
                 ref={ref}
               >
                 <motion.div
+                  // style={{ width: "90%", height: initialHeight }}
                   initial={false}
                   variants={{
                     idle: { height: initialHeight },
@@ -92,8 +101,8 @@ export default function Page() {
                 animate={{
                   color:
                     hovered || panning
-                      ? "rgb(255,255,255)"
-                      : "rgb(120,113,108)",
+                      ? "rgb(255, 255, 255)"
+                      : "rgb(120, 113, 108)",
                 }}
                 className="flex justify-end shrink-0 w-6"
               >
@@ -105,7 +114,9 @@ export default function Page() {
               initial={false}
               animate={{
                 color:
-                  hovered || panning ? "rgb(255,255,255)" : "rgb(120,113,108)",
+                  hovered || panning
+                    ? "rgb(255, 255, 255)"
+                    : "rgb(120, 113, 108)",
               }}
               className={`select-none mt-4 text-center text-sm font-semibold tabular-nums`}
             >
